@@ -3,14 +3,14 @@ import "./styles.css";
 
 const result = {};
 const have = {
-  2: 0,
-  3: 0,
-  4: 0,
-  5: 0
+  2: {full: 0, notFull:0},
+  3: {full: 0, notFull:0},
+  4: {full: 0, notFull:0},
+  5: {full: 0, notFull:0}
 };
 
 export default function App() {
-  const [count, updateCount] = useState(2);
+  const [count, updateCount] = useState(1);
   const [haveCount, setHaveCount] = useState(have);
 
   function getAmount(star, number) {
@@ -19,7 +19,8 @@ export default function App() {
     if (star <= 2) {
       return number;
     }
-    return getAmount(next, star * number - haveCount[next]);
+    const totalHave = haveCount[next].full + haveCount[next].notFull
+    return getAmount(next, star * number - totalHave);
   }
 
   function getResult(count) {
@@ -32,46 +33,59 @@ export default function App() {
 
   const updateFive = (e) => {
     const value = e.target.value;
-    setHaveCount((prev) => ({ ...prev, 5: +value }));
+    if(e.target.id==='full'){
+      setHaveCount((prev) => ({ ...prev, 5: {...prev[5], full: +value} }));
+    }
+    else if(e.target.id==='not_full'){
+      setHaveCount((prev) => ({ ...prev, 5: {...prev[5], notFull: +value} }));
+    }
   };
 
   const updateFour = (e) => {
     const value = e.target.value;
-    setHaveCount((prev) => ({ ...prev, 4: +value }));
+    if(e.target.id==='full'){
+      setHaveCount((prev) => ({ ...prev, 4: {...prev[4], full: +value} }));
+    }
+    else if(e.target.id==='not_full'){
+      setHaveCount((prev) => ({ ...prev, 4: {...prev[4], notFull: +value} }));
+    }
   };
 
   const updateThree = (e) => {
     const value = e.target.value;
-    setHaveCount((prev) => ({ ...prev, 3: +value }));
+    if(e.target.id==='full'){
+      setHaveCount((prev) => ({ ...prev, 3: {...prev[3], full: +value} }));
+    }
+    else if(e.target.id==='not_full'){
+      setHaveCount((prev) => ({ ...prev, 3: {...prev[3], notFull: +value} }));
+    }  
   };
 
   const updateTwo = (e) => {
     const value = e.target.value;
-    setHaveCount((prev) => ({ ...prev, 2: +value }));
+    if(e.target.id==='full'){
+      setHaveCount((prev) => ({ ...prev, 2: {...prev[2], full: +value} }));
+    }
+    else if(e.target.id==='not_full'){
+      setHaveCount((prev) => ({ ...prev, 2: {...prev[2], notFull: +value} }));
+    }  
   };
+
+  const StarItem = ({star, curr, handleChange, need})=> {
+    return (
+      <div>
+        {star} have: full <input id="full" value={curr.full} onChange={handleChange} /> not full <input id="not_full" value={curr.notFull} onChange={handleChange} /> need: <span>{need} </span>
+      </div>
+    )
+  }
 
   return (
     <div className="App">
-      <div>
-        6 want: <input value={count} onChange={changeCount} /> need:{" "}
-        <span>{result[6]} </span>
-      </div>
-      <div>
-        5 have: <input value={haveCount[5]} onChange={updateFive} /> need:{" "}
-        <span>{result[5]} </span>
-      </div>
-      <div>
-        4 have: <input value={haveCount[4]} onChange={updateFour} /> need:{" "}
-        <span>{result[4]} </span>
-      </div>
-      <div>
-        3 have: <input value={haveCount[3]} onChange={updateThree} /> need:{" "}
-        <span>{result[3]} </span>
-      </div>
-      <div>
-        2 have: <input value={haveCount[2]} onChange={updateTwo} /> need:{" "}
-        <span>{result[2]} </span>
-      </div>
+      6 want: <input id="full" value={count} onChange={changeCount} /> need: <span>{result[6]} </span>
+      <StarItem star={5} curr={haveCount[5]} handleChange={updateFive} need={result[5]}/>
+      <StarItem star={4} curr={haveCount[4]} handleChange={updateFour} need={result[4]}/>
+      <StarItem star={3} curr={haveCount[3]} handleChange={updateThree} need={result[3]}/>
+      <StarItem star={2} curr={haveCount[2]} handleChange={updateTwo} need={result[2]}/>
     </div>
   );
 }
